@@ -1,210 +1,134 @@
 class Component:
-    def __init__(self, max_lifespan, current_state="Pristine"):
-        self.current_state = current_state
+    def __init__(self, max_lifespan, wear_per_use):
+        self.component_name = self.__class__.__name__.lower()
         self.max_lifespan = max_lifespan
         self.amount_of_uses = 0
-        self.get_current_state()
-        
+        self.wear_per_use = wear_per_use
+        self.state_limits = {"Broken": 1, "Fragile": 0.5, "Good": 0.1, "Pristine": 0}
 
     def check_condition(self):
-        print(f"component state is currently {self.current_state} and has a current life span of {self.max_lifespan - self.amount_of_uses} uses")
-        return self.current_state
-    
+        print(f"""component state is currently {self.get_current_state()}
+              and has a current life span of {self.max_lifespan - self.amount_of_uses} uses""")
+        return self.get_current_state()
+
     def get_current_state(self):
-        if self.max_lifespan == 0:
-            self.current_state = 'Broken'
-            return
-        percent_max_use = self.amount_of_uses/self.max_lifespan
-        if percent_max_use >= 1:
-            self.current_state = 'Broken'
-            return
-        if percent_max_use < 0.1:
-            self.current_state = "Pristine"
-        elif percent_max_use < 0.5:
-            self.current_state = "Good"
-        elif percent_max_use < 1:
-            self.current_state = "Fragile"
-        return
+        try:
+            percent_max_use = self.amount_of_uses/self.max_lifespan
+        except ZeroDivisionError:
+            percent_max_use = 1
+
+        state_names = list(self.state_limits)
+        boundaries = list(self.state_limits.values())
+
+        for i, boundary in enumerate(boundaries):
+            if percent_max_use >= boundary:
+                return state_names[i]
+
+    def improve_state(self):
+        state_names = list(self.state_limits)
+        boundaries = list(self.state_limits.values())
+
+        curr_state = self.get_current_state()
+
+        i = state_names.index(curr_state)
+
+        if i in (0, len(state_names) - 2):
+            self.amount_of_uses = 0
+
+        else:
+            self.amount_of_uses = self.max_lifespan * boundaries[i+1]
+
+    def use(self):
+        if self.get_current_state() == "Broken":
+            raise BikeBrokenError(f"cannot ride because the {self.__class__.__name__} is broken")
+        self.amount_of_uses += self.wear_per_use
 
 class Bell(Component):
-    def __init__(self, max_lifespan):
-        super().__init__(max_lifespan)
-        self.component_name = "bell"
-        self.wear_per_use = 1
-    def usage(self):
-        self.amount_of_uses += self.wear_per_use
-        self.get_current_state()
-        if self.current_state == "Broken":
-            print("Bell is broken and cannot be used")
-            return
-        else:
-            print("The bell goes ding")
+    def __init__(self, max_lifespan, wear_per_use = 1):
+        super().__init__(max_lifespan, wear_per_use)
 
 class Gear(Component):
-    def __init__(self, max_lifespan):
-        super().__init__(max_lifespan)
-        self.component_name = "gear"
-        self.wear_per_use = 1
-    def usage(self):
-        self.amount_of_uses += self.wear_per_use
-        self.get_current_state()
-        if self.current_state == "Broken":
-            print("Gear is broken and cannot be used")
-            return
-        else:
-            print("The gears determines how hard you pedal")
+    def __init__(self, max_lifespan, wear_per_use = 1):
+        super().__init__(max_lifespan, wear_per_use)
 
 class Frame(Component):
-    def __init__(self, max_lifespan):
-        super().__init__(max_lifespan)
-        self.component_name = "frame"
-        self.wear_per_use = 1
-    def usage(self):
-        self.amount_of_uses += self.wear_per_use
-        self.get_current_state()
-        if self.current_state == "Broken":
-            print("frame is broken and cannot be used")
-            return
-        else:
-            print("The frame holds the bike together")       
+    def __init__(self, max_lifespan, wear_per_use = 1):
+        super().__init__(max_lifespan, wear_per_use)
             
 class Brake(Component):
-    def __init__(self, max_lifespan):
-        super().__init__(max_lifespan)
-        self.component_name = "brake"
-        self.wear_per_use = 1
-    def usage(self):
-        
-        self.amount_of_uses += self.wear_per_use
-        print(self.amount_of_uses)
-        self.get_current_state()
-        if self.current_state == "Broken":
-            print("brake is broken and cannot be used")
-            return
-        else:
-            print("The brake stops the bike")
-    
+    def __init__(self, max_lifespan,wear_per_use = 1):
+        super().__init__(max_lifespan, wear_per_use)
             
 class Chain(Component):
-    def __init__(self, max_lifespan):
-        super().__init__(max_lifespan)
-        self.component_name = "chain"
-        self.wear_per_use = 1
-    def usage(self):
-        self.amount_of_uses += self.wear_per_use
-        self.get_current_state()
-        if self.current_state == "Broken":
-            print("chain is broken and cannot be used")
-            return
-        else:
-            print("The chain makes the wheels go around")
-    
+    def __init__(self, max_lifespan, wear_per_use = 1):
+        super().__init__(max_lifespan, wear_per_use)
             
 class Tyre(Component):
-    def __init__(self, max_lifespan):
-        super().__init__(max_lifespan)
-        self.component_name = "tyre"
-        self.wear_per_use = 1
-    def usage(self):
-        self.amount_of_uses += self.wear_per_use
-        self.get_current_state()
-        if self.current_state == "Broken":
-            print("tyre is broken and cannot be used")
-            return
-        else:
-            print("The tyre gives the grip")
+    def __init__(self, max_lifespan, wear_per_use = 1):
+        super().__init__(max_lifespan, wear_per_use)
+
 class Seat(Component):
-    def __init__(self, max_lifespan):
-        super().__init__(max_lifespan)
-        self.component_name = "seat"
-        self.wear_per_use = 1
-    def usage(self):
-        self.amount_of_uses += self.wear_per_use
-        self.get_current_state()
-        if self.current_state == "Broken":
-            print("seat is broken and cannot be used")
-            return
-        else:
-            print("The seat is where you sit on")
+    def __init__(self, max_lifespan, wear_per_use = 1):
+        super().__init__(max_lifespan, wear_per_use)
+
 class Handles(Component):
-    def __init__(self, max_lifespan):
-        super().__init__(max_lifespan)
-        self.component_name = "handles"
-        self.wear_per_use = 1
-    def usage(self):
-        self.amount_of_uses += self.wear_per_use
-        self.get_current_state()
-        if self.current_state == "Broken":
-            print("handles are broken and cannot be used")
-            return
-        else:
-            print("The handles let you steer the bike")
+    def __init__(self, max_lifespan, wear_per_use = 1):
+        super().__init__(max_lifespan, wear_per_use)
+
 class Pedals(Component):
-    def __init__(self, max_lifespan):
-        super().__init__(max_lifespan)
-        self.component_name = "pedals"
-        self.wear_per_use = 1
-    def usage(self):
-        self.amount_of_uses += self.wear_per_use
-        self.get_current_state()
-        if self.current_state == "Broken":
-            print("pedals are broken and cannot be used")
-            return
-        else:
-            print("The pedals make the gears go round")
+    def __init__(self, max_lifespan, wear_per_use = 1):
+        super().__init__(max_lifespan, wear_per_use)
+
 class Lights(Component):
-    def __init__(self, max_lifespan):
-        super().__init__(max_lifespan)
-        self.component_name = "lights"
-        self.wear_per_use = 1
-    def usage(self):
-        self.amount_of_uses += self.wear_per_use
-        self.get_current_state()
-        if self.current_state == "Broken":
-            print("the lights are broken and cannot be used")
-            return
-        else:
-            print("The lights allow you to see in the dark")
+    def __init__(self, max_lifespan, wear_per_use = 1):
+        super().__init__(max_lifespan, wear_per_use)
+
 class Forks(Component):
-    def __init__(self, max_lifespan):
-        super().__init__(max_lifespan)
-        self.component_name = "forks"
-        self.wear_per_use = 1
-    def usage(self):
-        self.amount_of_uses += self.wear_per_use
-        self.get_current_state()
-        if self.current_state == "Broken":
-            print("forks are broken and cannot be used")
-            return
-        else:
-            print("The forks make the ride more smooth")
+    def __init__(self, max_lifespan, wear_per_use = 1):
+        super().__init__(max_lifespan, wear_per_use)
+
 class Bike:
     def __init__(self, *args):
         self.components = list(args)
+
     def ride(self):
+        comps_with_states = {comp.component_name:comp.get_current_state()
+                             for comp in self.components}
+        if "Broken" in comps_with_states.values():
+            broken_name = list(comps_with_states.keys())[list(comps_with_states.values())
+                                                         .index("Broken")]
+            raise BikeBrokenError(f"cannot ride because the {broken_name} is broken")
         message = "a beautiful quality ride today"
+        if "Fragile" in comps_with_states.values():
+            message = "it was a bumpy ride today"
         for comp in self.components:
-            if comp.current_state == "Broken":
-                raise BikeBrokenError("cannot ride because it is broken")
-            elif comp.current_state == "Fragile":
-                message = "it was a bumpy ride today"    
-        for comp in self.components:
-            comp.usage()
+            comp.use()
         return message
 
     def ring_bell(self):
-        comps_names = [comp.component_name for comp in self.components]
-        if "bell" not in comps_names:
+        comps_with_states = {comp.component_name:comp.get_current_state()
+                             for comp in self.components}
+
+        if "bell" not in comps_with_states.keys():
             raise NoBell("no bell found on bike")
+
         message = "Ring! Ring! Ring!"
+        if "Broken" in comps_with_states.values():
+            message = "The bell fell off"
+            return message
+        if "Fragile" in comps_with_states.values():
+            message = "Ring! cling..."
+        return message
+
+    def improve_part(self, target_state, target_components, verb):
+
         for comp in self.components:
-            if comp.current_state == "Broken":
-                message = "The bell fell off"
-                return message
-            elif comp.current_state == "Fragile":
-                message = "Ring! cling..."   
-        return message  
-    
+            if (comp.component_name in target_components 
+                and comp.get_current_state() == target_state):
+                comp.improve_state()
+                print(f"""the {comp.component_name} has been {verb} and is now in
+                     {comp.get_current_state()} condition""")
+
 class Racing(Bike):
     def __init__(self, *args):
         super().__init__(*args)
@@ -222,7 +146,6 @@ class BMX(Bike):
                 raise WrongComponentForBike("this type of bike cannot have this component")
             if comp.component_name == 'tyre':
                 comp.wear_per_use = 1.15
-            
 
 class Mountain(Bike):
     def __init__(self, *args):

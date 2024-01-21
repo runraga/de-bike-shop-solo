@@ -1,142 +1,129 @@
 import pytest
-from src.component import *
-
-def test_has_current_state_property():
-    component = Component(10)
-    assert hasattr(component, 'current_state')
+from src.component import ( Tyre, Bell, Brake, Chain, Bike, Racing, BikeBrokenError, Pedals, BMX, Mountain, Street)
 
 def test_has_max_lifespan_property():
-    component = Component(10)
+    component = Tyre(10)
     assert hasattr(component, 'max_lifespan')
 
 def test_has_check_condition_method():
-    component = Component(10)
+    component = Tyre(10)
     assert hasattr(component, 'check_condition')
 
 def test_check_condition_returns_component_state():
     expected = "Pristine"
-    component = Component(10)
+    component = Tyre(10)
     result = component.check_condition()
     assert result == expected
 
-def test_bell_has_same_attributed_as_component():
+def test_bell_has_same_attributes_as_component():
     bell = Bell(10)
-    assert hasattr(bell, 'current_state')
     assert hasattr(bell, 'max_lifespan')
     assert hasattr(bell, 'check_condition')
     
-def test_bell_has_usage_method():
+def test_bell_has_use_method():
     bell = Bell(10)
-    assert hasattr(bell, 'usage')
+    assert hasattr(bell, 'use')
 
-def test_state_of_bell_decrease_with_usage():
+def test_state_of_bell_decrease_with_use():
     bell = Bell(10)
-    bell.usage()
-    bell.usage()
+    bell.use()
+    bell.use()
     expected = "Good"
-    result = bell.current_state
+    result = bell.get_current_state()
     assert result == expected
 
 def test_bell_cannot_be_used_if_broken():
     bell = Bell(10)
     for _ in range(10):
-        bell.usage()
-    # bell.usage()
-    # bell.usage()
-    # bell.usage()
-    # bell.usage()
-    # bell.usage()
-    # bell.usage()
-    # bell.usage()
-    # bell.usage()
-    # bell.usage()
-    # bell.usage()
+        bell.use()
+
     expected = "Broken"
-    result = bell.current_state
+    result = bell.get_current_state()
     assert result == expected
     
-def test_brake_has_usage_method():
+def test_brake_has_use_method():
     brake = Brake(10)
-    assert hasattr(brake, 'usage')
+    assert hasattr(brake, 'use')
 
-def test_state_of_brake_decrease_with_usage():
+def test_state_of_brake_decrease_with_use():
     brake = Brake(10)
-    brake.usage()
-    brake.usage()
+    brake.use()
+    brake.use()
     expected = "Good"
-    result = brake.current_state
+    result = brake.get_current_state()
     assert result == expected
 
 def test_brake_cannot_be_used_if_broken():
     brake = Brake(10)
-    brake.usage()
-    brake.usage()
-    brake.usage()
-    brake.usage()
-    brake.usage()
-    brake.usage()
-    brake.usage()
-    brake.usage()
-    brake.usage()
-    brake.usage()
+    brake.use()
+    brake.use()
+    brake.use()
+    brake.use()
+    brake.use()
+    brake.use()
+    brake.use()
+    brake.use()
+    brake.use()
+    brake.use()
     expected = "Broken"
-    result = brake.current_state
+    result = brake.get_current_state()
     assert result == expected
 
-def test_chain_has_usage_method():
+def test_chain_has_use_method():
     chain = Chain(10)
-    assert hasattr(chain, 'usage')
+    assert hasattr(chain, 'use')
 
-def test_state_of_chain_decrease_with_usage():
+def test_state_of_chain_decrease_with_use():
     chain = Chain(10)
-    chain.usage()
-    chain.usage()
+    chain.use()
+    chain.use()
     expected = "Good"
-    result = chain.current_state
+    result = chain.get_current_state()
     assert result == expected
 
 def test_chain_cannot_be_used_if_broken():
     chain = Chain(10)
-    chain.usage()
-    chain.usage()
-    chain.usage()
-    chain.usage()
-    chain.usage()
-    chain.usage()
-    chain.usage()
-    chain.usage()
-    chain.usage()
-    chain.usage()
+    chain.use()
+    chain.use()
+    chain.use()
+    chain.use()
+    chain.use()
+    chain.use()
+    chain.use()
+    chain.use()
+    chain.use()
+    chain.use()
     expected = "Broken"
-    result = chain.current_state
+    result = chain.get_current_state()
     assert result == expected
 
-def test_tyres_has_usage_method():
+def test_tyres_has_use_method():
     tyre = Tyre(10)
-    assert hasattr(tyre, 'usage')
+    assert hasattr(tyre, 'use')
 
-def test_state_of_tyres_decrease_with_usage():
+def test_state_of_tyres_decrease_with_use():
     tyre = Tyre(10)
-    tyre.usage()
-    tyre.usage()
+    tyre.use()
+    tyre.use()
     expected = "Good"
-    result = tyre.current_state
+    result = tyre.get_current_state()
     assert result == expected
 
 def test_tyres_cannot_be_used_if_broken():
     tyre = Tyre(10)
-    tyre.usage()
-    tyre.usage()
-    tyre.usage()
-    tyre.usage()
-    tyre.usage()
-    tyre.usage()
-    tyre.usage()
-    tyre.usage()
-    tyre.usage()
-    tyre.usage()
+    tyre.use()
+    tyre.use()
+    tyre.use()
+    tyre.use()
+    tyre.use()
+    tyre.use()
+    tyre.use()
+    tyre.use()
+    tyre.use()
+    tyre.use()
+
     expected = "Broken"
-    result = tyre.current_state
+    result = tyre.get_current_state()
     assert result == expected
 
 def test_has_correct_attributes():
@@ -150,7 +137,7 @@ def test_has_correct_attributes():
 def test_ride_method_returns_correct_response_when_bike_is_broken():
     with pytest.raises(
         BikeBrokenError,
-        match="cannot ride because it is broken"
+        match="cannot ride because the bell is broken"
     ):
         bell = Bell(0)
         brake = Brake(0)
@@ -167,7 +154,7 @@ def test_all_componenets_are_fine_or_pristine():
     bike = Bike(bell, brake, chain, tyre)
     expected = "a beautiful quality ride today"
     result = bike.ride()
-    assert result == expected   
+    assert result == expected
 
 def test_when_a_component_is_fagile_none_broken():
     bell = Bell(10)
@@ -182,7 +169,7 @@ def test_when_a_component_is_fagile_none_broken():
     bike.ride()
     bike.ride()
     result = bike.ride()
-    assert result == expected       
+    assert result == expected
 
 def test_ring_bell_method_returns_correct_response_when_bike_is_broken():
     bell = Bell(0)
@@ -194,7 +181,7 @@ def test_ring_bell_method_returns_correct_response_when_bike_is_broken():
     result = bike.ring_bell()
     assert result == expected
 
-def test_racing_bike_increase_tyre_and_chain_usage_correctly():
+def test_racing_bike_increase_tyre_and_chain_use_correctly():
     bell = Bell(5)
     brake = Brake(5)
     chain = Chain(5)
@@ -207,7 +194,7 @@ def test_racing_bike_increase_tyre_and_chain_usage_correctly():
         if comp.component_name == 'chain':
             assert comp.amount_of_uses == 1.05
 
-def test_BMX_bike_increase_tyre_and_chain_usage_correctly():
+def test_BMX_bike_increase_tyre_and_chain_use_correctly():
     bell = Bell(5)
     pedals = Pedals(5)
     chain = Chain(5)
@@ -217,9 +204,8 @@ def test_BMX_bike_increase_tyre_and_chain_usage_correctly():
     for comp in bmx.components:
         if comp.component_name == 'tyre':
             assert comp.amount_of_uses == 1.15
-        
 
-def test_mountain_bike_increase_tyre_and_chain_usage_correctly():
+def test_mountain_bike_increase_tyre_and_chain_use_correctly():
     bell = Bell(5)
     brake = Brake(5)
     chain = Chain(5)
@@ -230,7 +216,7 @@ def test_mountain_bike_increase_tyre_and_chain_usage_correctly():
         if comp.component_name == 'chain':
             assert comp.amount_of_uses == 0.85
 
-def test_street_bike_increase_tyre_and_chain_usage_correctly():
+def test_street_bike_increase_tyre_and_chain_use_correctly():
     bell = Bell(5)
     brake = Brake(5)
     chain = Chain(5)
